@@ -1,8 +1,9 @@
 import type { AccountProfile, CosmeticItem } from '../shared/types'
 
-// Backend'in nerede çalıştığı — yerel geliştirmede localhost, dağıtımda
-// (Railway/Render vb.) gerçek URL'i ZEWO_BACKEND_URL ortam değişkeniyle verin.
-const BASE_URL = process.env.ZEWO_BACKEND_URL || 'http://localhost:4000'
+// Backend artık Railway'de canlı — arkadaşların ayrıca bir şey kurmadan
+// bu adrese bağlanır. Yerel geliştirmede farklı bir backend'e (örn.
+// localhost:4000) bağlanmak istersen ZEWO_BACKEND_URL ile geçersiz kılabilirsin.
+const BASE_URL = process.env.ZEWO_BACKEND_URL || 'https://zewo-backend-production.up.railway.app'
 
 async function request<T>(path: string, options: RequestInit = {}, token?: string): Promise<T> {
   let res: Response
