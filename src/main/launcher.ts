@@ -7,8 +7,9 @@ import {
   installFabric
 } from '@xmcl/installer'
 import { Version, launch as xmclLaunch, type ResolvedVersion } from '@xmcl/core'
-import { getInstanceRoot, getBundledJavaPath } from './paths'
+import { getInstanceRoot } from './paths'
 import { installPerformanceMods } from './performanceMods'
+import { ensureJavaPath } from './javaSetup'
 import { getSettings } from './settings'
 import type { LaunchProgress, ZewoSession } from '../shared/types'
 
@@ -150,13 +151,13 @@ export async function launchGame(
     onProgress({ stage: 'perf-mods', message: 'Performans modları kontrol ediliyor (Sodium, Lithium, Iris)…' })
     await installPerformanceMods(mcVersion, (message) => onProgress({ stage: 'perf-mods', message }))
 
-    onProgress({ stage: 'launching', message: 'Oyun başlatılıyor…' })
-
     // Kullanıcı Ayarlar'dan özel bir Java yolu seçmediyse (hâlâ varsayılan
-    // "java" ise), sistemin Java'sı yerine — varsa — launcher'a gömülü,
-    // doğru sürümdeki taşınabilir JDK'yı tercih et.
+    // "java" ise), sistemin Java'sına (genelde eski/uyumsuz) güvenmek yerine
+    // launcher'ın kendi Java 21'ini kullan — yoksa şimdi indirip kur.
     const effectiveJavaPath =
-      settings.javaPath === 'java' ? (getBundledJavaPath() ?? settings.javaPath) : settings.javaPath
+      settings.javaPath === 'java' ? await ensureJavaPath(onProgress) : settings.javaPath
+
+    onProgress({ stage: 'launching', message: 'Oyun başlatılıyor…' })
 
     const child = await xmclLaunch({
       gamePath: root,
