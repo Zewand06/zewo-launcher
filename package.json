@@ -1,0 +1,32 @@
+{
+  "name": "zewo-launcher",
+  "version": "0.1.0",
+  "description": "Zewo Launcher - ozel Minecraft Skyblock launcher",
+  "main": "./out/main/index.js",
+  "author": "poyrzshn0@gmail.com",
+  "private": true,
+  "scripts": {
+    "dev": "electron-vite dev",
+    "build": "electron-vite build",
+    "start": "electron-vite preview",
+    "typecheck": "tsc --noEmit -p tsconfig.node.json && tsc --noEmit -p tsconfig.web.json"
+  },
+  "dependencies": {
+    "@xmcl/installer": "6.1.2",
+    "electron-store": "^8.2.0",
+    "minecraft-launcher-core": "^3.18.2",
+    "msmc": "^5.0.5",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "skinview3d": "^3.4.2"
+  },
+  "devDependencies": {
+    "@types/react": "^18.3.3",
+    "@types/react-dom": "^18.3.0",
+    "@vitejs/plugin-react": "^4.3.1",
+    "electron": "^31.0.0",
+    "electron-vite": "^2.3.0",
+    "typescript": "^5.5.4",
+    "vite": "^5.4.0"
+  }
+}

@@ -1,0 +1,17 @@
+:root {
+  --void: #0b0e1a;
+  --surface: #121729;
+  --surface-2: #181f38;
+  --line: #2a3252;
+  --cyan: #4dd8c9;
+  --violet: #8b7cf6;
+  --gold: #e8b563;
+  --danger: #e8697a;
+  --text: #eef1fb;
+  --text-muted: #8c95b8;
+  --text-faint: #5b6389;
+
+  --font-display: 'Rajdhani', 'Segoe UI', sans-serif;
+  --font-body: 'Plus Jakarta Sans', 'Segoe UI', sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, monospace;
+}
