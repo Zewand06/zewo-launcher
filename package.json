@@ -1,6 +1,6 @@
 {
   "name": "zewo-launcher",
-  "version": "0.1.2",
+  "version": "0.1.3",
   "description": "Zewo Launcher - ozel Minecraft Skyblock launcher",
   "main": "./out/main/index.js",
   "author": "poyrzshn0@gmail.com",
@@ -42,7 +42,8 @@
       "output": "release"
     },
     "win": {
-      "target": "nsis"
+      "target": "nsis",
+      "icon": "build/icon.ico"
     },
     "nsis": {
       "oneClick": false,

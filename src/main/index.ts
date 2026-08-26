@@ -1,4 +1,5 @@
 import { join } from 'path'
+import { writeFileSync } from 'fs'
 import os from 'os'
 import { app, BrowserWindow, ipcMain } from 'electron'
 import { loginOffline, loginMicrosoft } from './auth'
@@ -23,7 +24,7 @@ import {
   clearAccountSession,
   updateEquipped
 } from './accountSession'
-import { fetchMinecraftSkinUrl } from './skin'
+import { fetchMinecraftSkinUrl, fetchSkinUrlByUsername } from './skin'
 import { initUpdater, checkForUpdates, downloadUpdate, quitAndInstall } from './updater'
 import type { AccountSession, LauncherSettings, ZewoSession } from '../shared/types'
 
@@ -48,6 +49,16 @@ function createWindow(): void {
     mainWindow?.show()
     if (process.env.ZEWO_DEBUG) {
       mainWindow?.webContents.openDevTools({ mode: 'right' })
+    }
+    // Geliştirme sırasında ekran görüntüsü almak için (ör. ZEWO_SCREENSHOT=C:\shot.png
+    // npm run dev). Prod kullanıcılarında bu env değişkeni asla set edilmez.
+    if (process.env.ZEWO_SCREENSHOT) {
+      const outPath = process.env.ZEWO_SCREENSHOT
+      setTimeout(() => {
+        mainWindow?.webContents
+          .capturePage()
+          .then((image) => writeFileSync(outPath, image.toPNG()))
+      }, 3000)
     }
     initUpdater(mainWindow!)
     checkForUpdates()
@@ -164,6 +175,9 @@ app.whenReady().then(() => {
   })
 
   ipcMain.handle('skin:fetch', (_event, uuid: string) => fetchMinecraftSkinUrl(uuid))
+  ipcMain.handle('skin:fetchByUsername', (_event, username: string) =>
+    fetchSkinUrlByUsername(username)
+  )
 
   ipcMain.handle('updater:download', () => downloadUpdate())
   ipcMain.handle('updater:install', () => quitAndInstall())

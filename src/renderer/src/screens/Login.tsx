@@ -96,7 +96,7 @@ export default function Login({ onLoggedIn }: LoginProps): JSX.Element {
                   className="input"
                   value={username}
                   onChange={(event) => setUsername(event.target.value)}
-                  placeholder="Poyraz_"
+                  placeholder="Kullanıcı adı"
                   maxLength={16}
                   autoFocus
                 />

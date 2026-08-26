@@ -71,7 +71,9 @@ const api = {
     deleteUser: (userId: number): Promise<{ ok: true }> => ipcRenderer.invoke('admin:deleteUser', userId)
   },
   skin: {
-    fetch: (uuid: string): Promise<string | null> => ipcRenderer.invoke('skin:fetch', uuid)
+    fetch: (uuid: string): Promise<string | null> => ipcRenderer.invoke('skin:fetch', uuid),
+    fetchByUsername: (username: string): Promise<string | null> =>
+      ipcRenderer.invoke('skin:fetchByUsername', username)
   },
   updater: {
     download: (): Promise<void> => ipcRenderer.invoke('updater:download'),

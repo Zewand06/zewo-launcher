@@ -4,12 +4,14 @@ import { AmbientWingAnimation } from '../utils/wingAnimation'
 
 interface SkinViewerProps {
   skinUrl: string
+  skinModel?: 'default' | 'slim' | 'auto-detect'
   capeUrl?: string | null
   backEquipment?: 'cape' | 'elytra'
 }
 
 export default function SkinViewer({
   skinUrl,
+  skinModel = 'auto-detect',
   capeUrl,
   backEquipment = 'cape'
 }: SkinViewerProps): JSX.Element {
@@ -38,8 +40,8 @@ export default function SkinViewer({
 
   useEffect(() => {
     if (!skinUrl) return
-    viewerRef.current?.loadSkin(skinUrl).catch(() => {})
-  }, [skinUrl])
+    viewerRef.current?.loadSkin(skinUrl, { model: skinModel }).catch(() => {})
+  }, [skinUrl, skinModel])
 
   useEffect(() => {
     if (capeUrl) {

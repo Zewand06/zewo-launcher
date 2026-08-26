@@ -1,21 +1,8 @@
-// Gerçek skin/cape sanat dosyaları eklenene kadar kullanılan, temaya uygun
+// Gerçek cape/kanat sanat dosyaları eklenene kadar kullanılan, temaya uygun
 // renklerden üretilen yer tutucu dokular. Düz/gradyan dolgu kullanıldığı için
 // Minecraft'ın UV şablonunda yanlış hizalanma riski yok — hangi bölge
 // örneklenirse örneklensin sonuç her zaman düzgün bir gradyan olur.
-
-export function createPlaceholderSkin(): string {
-  const canvas = document.createElement('canvas')
-  canvas.width = 64
-  canvas.height = 64
-  const ctx = canvas.getContext('2d')
-  if (!ctx) return ''
-  const grad = ctx.createLinearGradient(0, 0, 64, 64)
-  grad.addColorStop(0, '#4dd8c9')
-  grad.addColorStop(1, '#8b7cf6')
-  ctx.fillStyle = grad
-  ctx.fillRect(0, 0, 64, 64)
-  return canvas.toDataURL()
-}
+// (Skin için artık gerçek Mojang dokuları kullanılıyor — bkz. assets/alex-skin.png)
 
 const CAPE_COLORS: Record<string, [string, string]> = {
   // Cape'ler
