@@ -1,6 +1,6 @@
 {
   "name": "zewo-launcher",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Zewo Launcher - ozel Minecraft Skyblock launcher",
   "main": "./out/main/index.js",
   "author": "poyrzshn0@gmail.com",
@@ -9,13 +9,16 @@
     "dev": "electron-vite dev",
     "build": "electron-vite build",
     "start": "electron-vite preview",
-    "typecheck": "tsc --noEmit -p tsconfig.node.json && tsc --noEmit -p tsconfig.web.json"
+    "typecheck": "tsc --noEmit -p tsconfig.node.json && tsc --noEmit -p tsconfig.web.json",
+    "dist": "npm run build && electron-builder --win --publish never",
+    "release": "npm run build && electron-builder --win --publish always"
   },
   "dependencies": {
     "@xmcl/installer": "6.1.2",
     "electron-store": "^8.2.0",
     "minecraft-launcher-core": "^3.18.2",
     "msmc": "^5.0.5",
+    "electron-updater": "^6.8.9",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "skinview3d": "^3.4.2"
@@ -25,8 +28,33 @@
     "@types/react-dom": "^18.3.0",
     "@vitejs/plugin-react": "^4.3.1",
     "electron": "^31.0.0",
+    "electron-builder": "^26.15.3",
     "electron-vite": "^2.3.0",
     "typescript": "^5.5.4",
     "vite": "^5.4.0"
+  },
+  "build": {
+    "appId": "com.zewo.launcher",
+    "productName": "Zewo Launcher",
+    "files": ["out/**/*", "package.json"],
+    "directories": {
+      "output": "release"
+    },
+    "win": {
+      "target": "nsis"
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true
+    },
+    "publish": [
+      {
+        "provider": "github",
+        "owner": "Zewand06",
+        "repo": "zewo-launcher",
+        "releaseType": "draft"
+      }
+    ]
   }
 }

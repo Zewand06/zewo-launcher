@@ -47,3 +47,18 @@ export interface AccountSession {
   equippedCapeId: number | null
   equippedWingsId: number | null
 }
+
+export type UpdateStage =
+  | 'checking'
+  | 'available'
+  | 'up-to-date'
+  | 'downloading'
+  | 'downloaded'
+  | 'error'
+
+export interface UpdateStatus {
+  stage: UpdateStage
+  version?: string
+  percent?: number
+  message?: string
+}

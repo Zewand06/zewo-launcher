@@ -6,6 +6,7 @@ import type {
   LaunchProgress,
   LauncherSettings,
   ModEntry,
+  UpdateStatus,
   ZewoSession
 } from '../shared/types'
 
@@ -71,6 +72,15 @@ const api = {
   },
   skin: {
     fetch: (uuid: string): Promise<string | null> => ipcRenderer.invoke('skin:fetch', uuid)
+  },
+  updater: {
+    download: (): Promise<void> => ipcRenderer.invoke('updater:download'),
+    install: (): Promise<void> => ipcRenderer.invoke('updater:install'),
+    onStatus: (callback: (status: UpdateStatus) => void): (() => void) => {
+      const listener = (_event: unknown, status: UpdateStatus): void => callback(status)
+      ipcRenderer.on('updater:status', listener)
+      return () => ipcRenderer.removeListener('updater:status', listener)
+    }
   }
 }
 

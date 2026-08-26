@@ -24,6 +24,7 @@ import {
   updateEquipped
 } from './accountSession'
 import { fetchMinecraftSkinUrl } from './skin'
+import { initUpdater, checkForUpdates, downloadUpdate, quitAndInstall } from './updater'
 import type { AccountSession, LauncherSettings, ZewoSession } from '../shared/types'
 
 let mainWindow: BrowserWindow | null = null
@@ -48,6 +49,8 @@ function createWindow(): void {
     if (process.env.ZEWO_DEBUG) {
       mainWindow?.webContents.openDevTools({ mode: 'right' })
     }
+    initUpdater(mainWindow!)
+    checkForUpdates()
   })
   mainWindow.on('closed', () => {
     mainWindow = null
@@ -161,6 +164,9 @@ app.whenReady().then(() => {
   })
 
   ipcMain.handle('skin:fetch', (_event, uuid: string) => fetchMinecraftSkinUrl(uuid))
+
+  ipcMain.handle('updater:download', () => downloadUpdate())
+  ipcMain.handle('updater:install', () => quitAndInstall())
 
   createWindow()
 
