@@ -3,8 +3,8 @@ import AuroraBackground from '../components/AuroraBackground'
 import SkinViewer from '../components/SkinViewer'
 import Logo from '../components/Logo'
 import { createPlaceholderCape } from '../utils/placeholderTextures'
+import { useResolvedSkin } from '../hooks/useResolvedSkin'
 import { WHATS_NEW } from '../data/whatsNew'
-import alexSkinUrl from '../assets/alex-skin.png'
 import zewoLogoFull from '../assets/zewo-logo-full.png'
 import type { AccountSession, LaunchProgress, ZewoSession } from '../../../shared/types'
 
@@ -20,8 +20,7 @@ export default function Home({ session, accountSession, onAccountUpdate }: HomeP
   const [loadingVersions, setLoadingVersions] = useState(true)
   const [progress, setProgress] = useState<LaunchProgress | null>(null)
   const [launching, setLaunching] = useState(false)
-  const [skinUrl, setSkinUrl] = useState<string>(alexSkinUrl)
-  const [skinModel, setSkinModel] = useState<'default' | 'slim' | 'auto-detect'>('slim')
+  const { skinUrl, skinModel } = useResolvedSkin(session)
   const [versionMenuOpen, setVersionMenuOpen] = useState(false)
   const versionPickerRef = useRef<HTMLDivElement | null>(null)
 
@@ -43,34 +42,6 @@ export default function Home({ session, accountSession, onAccountUpdate }: HomeP
     })
     return unsubscribe
   }, [])
-
-  useEffect(() => {
-    if (session.authType !== 'microsoft') {
-      // Cracked/offline hesap: önce Minecraft'ın resmi varsayılan skin'i olan
-      // Alex'i gösteriyoruz, sonra bu kullanıcı adı gerçekten sahip olunan bir
-      // premium hesaba da aitse (ör. offline'da da kendi premium adını
-      // kullananlar) o hesabın gerçek skin'iyle değiştiriyoruz.
-      setSkinUrl(alexSkinUrl)
-      setSkinModel('slim')
-      window.zewo.skin.fetchByUsername(session.username).then((url) => {
-        if (url) {
-          setSkinUrl(url)
-          setSkinModel('auto-detect')
-        }
-      })
-      return
-    }
-    window.zewo.skin.fetch(session.uuid).then((url) => {
-      if (url) {
-        setSkinUrl(url)
-        setSkinModel('auto-detect')
-      } else {
-        // Premium hesabın özel bir skin'i yoksa yine Alex'i göster.
-        setSkinUrl(alexSkinUrl)
-        setSkinModel('slim')
-      }
-    })
-  }, [session])
 
   useEffect(() => {
     if (!versionMenuOpen) return

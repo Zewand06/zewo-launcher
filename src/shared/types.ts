@@ -34,12 +34,38 @@ export interface CosmeticItem {
   name: string
 }
 
+export type UserRole = 'member' | 'vip' | 'moderator' | 'admin'
+
+export const ALL_ROLES: UserRole[] = ['member', 'vip', 'moderator', 'admin']
+
+export type Permission =
+  | 'view_others'
+  | 'manage_cosmetics'
+  | 'reset_password'
+  | 'delete_user'
+  | 'manage_roles'
+
+export const ALL_PERMISSIONS: Permission[] = [
+  'view_others',
+  'manage_cosmetics',
+  'reset_password',
+  'delete_user',
+  'manage_roles'
+]
+
 export interface AccountProfile {
   id: number
   username: string
   isAdmin: boolean
+  role: UserRole
   cosmetics: CosmeticItem[]
+  createdAt: number
+  lastLoginAt: number | null
+  totalPlaytimeMs: number
+  mostPlayedVersion: string | null
 }
+
+export type PermissionMatrix = Record<UserRole, Permission[]>
 
 export interface AccountSession {
   token: string

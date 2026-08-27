@@ -3,6 +3,7 @@ import Sidebar, { type Screen } from '../components/Sidebar'
 import Home from './Home'
 import Mods from './Mods'
 import Settings from './Settings'
+import Profile from './Profile'
 import Admin from './Admin'
 import type { AccountSession, ZewoSession } from '../../../shared/types'
 
@@ -20,12 +21,13 @@ export default function Dashboard({
   onLogout
 }: DashboardProps): JSX.Element {
   const [screen, setScreen] = useState<Screen>('home')
+  const role = accountSession.profile.role
 
   return (
     <div className="dashboard">
       <Sidebar
         active={screen}
-        showAdmin={accountSession.profile.isAdmin}
+        showAdmin={role === 'admin' || role === 'moderator'}
         onNavigate={setScreen}
         onLogout={onLogout}
       />
@@ -35,7 +37,8 @@ export default function Dashboard({
         )}
         {screen === 'mods' && <Mods />}
         {screen === 'settings' && <Settings />}
-        {screen === 'admin' && accountSession.profile.isAdmin && (
+        {screen === 'profile' && <Profile session={session} accountSession={accountSession} />}
+        {screen === 'admin' && (role === 'admin' || role === 'moderator') && (
           <Admin onSelfUpdate={onAccountUpdate} />
         )}
       </div>

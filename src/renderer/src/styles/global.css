@@ -778,20 +778,22 @@ select {
   font-size: 11px;
 }
 
-/* ---------- shared screen scaffolding (mods / settings / admin) ---------- */
+/* ---------- shared screen scaffolding (mods / settings / admin / profile) ---------- */
 .mods-screen,
 .settings-screen,
-.admin-screen {
+.admin-screen,
+.profile-screen {
   padding: 28px;
   display: flex;
   flex-direction: column;
   gap: 20px;
-  max-width: 640px;
+  max-width: 700px;
 }
 
 .mods-screen h1,
 .settings-screen h1,
-.admin-screen h1 {
+.admin-screen h1,
+.profile-screen h1 {
   margin: 0 0 4px;
   font-family: var(--font-display);
   font-weight: 600;
@@ -891,6 +893,206 @@ select {
 
 .admin-delete-btn:hover {
   color: var(--danger);
+}
+
+.admin-stats-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 16px;
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  color: var(--text-faint);
+}
+
+.role-select {
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  letter-spacing: 0.04em;
+  background: var(--surface-2);
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  padding: 3px 6px;
+}
+
+.role-badge {
+  flex: none;
+  font-family: var(--font-mono);
+  font-size: 9.5px;
+  letter-spacing: 0.06em;
+  border-radius: 6px;
+  padding: 2px 7px;
+}
+
+.role-badge.role-member {
+  color: var(--text-faint);
+  border: 1px solid var(--line);
+}
+
+.role-badge.role-vip {
+  color: var(--gold);
+  border: 1px solid rgba(242, 163, 92, 0.4);
+}
+
+.role-badge.role-moderator {
+  color: var(--cyan);
+  border: 1px solid rgba(255, 75, 62, 0.35);
+}
+
+.role-badge.role-admin {
+  color: var(--void);
+  background: linear-gradient(100deg, var(--cyan), var(--violet));
+  border: 1px solid transparent;
+}
+
+/* ---------- profil ekranı ---------- */
+.face-avatar {
+  position: relative;
+  flex: none;
+  border-radius: 18px;
+  overflow: hidden;
+  border: 1px solid var(--line);
+  box-shadow: 0 16px 40px -16px rgba(0, 0, 0, 0.6);
+}
+
+.face-avatar-layer {
+  position: absolute;
+  inset: 0;
+}
+
+.profile-self-card {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  padding: 28px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.profile-self-top {
+  display: flex;
+  align-items: center;
+  gap: 22px;
+}
+
+.profile-self-identity {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 10px;
+}
+
+.profile-username {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 28px;
+}
+
+.profile-stats-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 14px;
+}
+
+.stat-tile {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  background: var(--surface-2);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 14px 16px;
+}
+
+.stat-tile .label {
+  font-family: var(--font-mono);
+  font-size: 9.5px;
+  letter-spacing: 0.06em;
+  color: var(--text-faint);
+}
+
+.stat-tile .value {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.profile-roster h4 {
+  margin: 0 0 12px;
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-faint);
+}
+
+/* ---------- yetki matrisi ---------- */
+.permission-matrix {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  padding: 18px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.permission-matrix h4 {
+  margin: 0;
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 16px;
+}
+
+.matrix-table {
+  margin-top: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  overflow-x: auto;
+}
+
+.matrix-row {
+  display: grid;
+  grid-template-columns: 1fr repeat(3, 84px);
+  align-items: center;
+  gap: 8px;
+  padding: 8px 0;
+  border-bottom: 1px solid var(--line);
+}
+
+.matrix-row:last-child {
+  border-bottom: none;
+}
+
+.matrix-row.matrix-head {
+  font-family: var(--font-mono);
+  font-size: 9.5px;
+  letter-spacing: 0.05em;
+  color: var(--text-faint);
+  text-transform: uppercase;
+}
+
+.matrix-row.matrix-head span {
+  text-align: center;
+}
+
+.matrix-label {
+  font-size: 12.5px;
+  color: var(--text-muted);
+  padding-right: 8px;
+}
+
+.matrix-cell {
+  display: flex;
+  justify-content: center;
+}
+
+.matrix-cell input {
+  width: 16px;
+  height: 16px;
+  accent-color: var(--cyan);
+  cursor: pointer;
 }
 
 .screen-header {

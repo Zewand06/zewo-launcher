@@ -1,7 +1,7 @@
-import { HomeIcon, ModsIcon, SettingsIcon, AdminIcon, LogoutIcon } from './icons'
+import { HomeIcon, ModsIcon, SettingsIcon, ProfileIcon, AdminIcon, LogoutIcon } from './icons'
 import Logo from './Logo'
 
-export type Screen = 'home' | 'mods' | 'settings' | 'admin'
+export type Screen = 'home' | 'mods' | 'settings' | 'profile' | 'admin'
 
 interface SidebarProps {
   active: Screen
@@ -13,7 +13,8 @@ interface SidebarProps {
 const BASE_ITEMS: { id: Screen; label: string; Icon: typeof HomeIcon }[] = [
   { id: 'home', label: 'Ana Sayfa', Icon: HomeIcon },
   { id: 'mods', label: 'Modlar', Icon: ModsIcon },
-  { id: 'settings', label: 'Ayarlar', Icon: SettingsIcon }
+  { id: 'settings', label: 'Ayarlar', Icon: SettingsIcon },
+  { id: 'profile', label: 'Profil', Icon: ProfileIcon }
 ]
 
 export default function Sidebar({

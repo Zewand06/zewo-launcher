@@ -1,4 +1,4 @@
-import type { AccountProfile, CosmeticItem } from '../shared/types'
+import type { AccountProfile, CosmeticItem, Permission, PermissionMatrix, UserRole } from '../shared/types'
 
 // Backend artık Railway'de canlı — arkadaşların ayrıca bir şey kurmadan
 // bu adrese bağlanır. Yerel geliştirmede farklı bir backend'e (örn.
@@ -93,4 +93,69 @@ export function adminResetPassword(
 
 export function adminDeleteUser(token: string, userId: number): Promise<{ ok: true }> {
   return request(`/api/admin/users/${userId}`, { method: 'DELETE' }, token)
+}
+
+export function adminGetUser(token: string, userId: number): Promise<{ profile: AccountProfile }> {
+  return request(`/api/admin/users/${userId}`, {}, token)
+}
+
+export function adminSetRole(
+  token: string,
+  userId: number,
+  role: UserRole
+): Promise<{ profile: AccountProfile }> {
+  return request(
+    `/api/admin/users/${userId}/role`,
+    { method: 'PUT', body: JSON.stringify({ role }) },
+    token
+  )
+}
+
+export function fetchPermissionMatrix(
+  token: string
+): Promise<{ roles: UserRole[]; permissions: Permission[]; matrix: PermissionMatrix }> {
+  return request('/api/admin/permissions', {}, token)
+}
+
+export function togglePermission(
+  token: string,
+  role: UserRole,
+  permission: Permission,
+  enabled: boolean
+): Promise<{ ok: true }> {
+  return request(
+    '/api/admin/permissions/toggle',
+    { method: 'POST', body: JSON.stringify({ role, permission, enabled }) },
+    token
+  )
+}
+
+// Launcher, OYNA'ya basılınca ve Minecraft süreci kapanınca bunları çağırır
+// — profil ekranındaki "toplam oynama süresi" ve "en çok oynanan sürüm"
+// buradan besleniyor. Hesap girişi yoksa (çok nadir ama) sessizce atlanır.
+export function startPlaySession(
+  token: string,
+  mcVersion: string
+): Promise<{ sessionId: number }> {
+  return request(
+    '/api/play-sessions/start',
+    { method: 'POST', body: JSON.stringify({ mcVersion }) },
+    token
+  )
+}
+
+export function endPlaySession(token: string, sessionId: number): Promise<{ ok: true }> {
+  return request(`/api/play-sessions/${sessionId}/end`, { method: 'POST' }, token)
+}
+
+export function reportMcSession(
+  token: string,
+  mcUsername: string,
+  mcUuid: string
+): Promise<{ ok: true }> {
+  return request(
+    '/api/me/session',
+    { method: 'POST', body: JSON.stringify({ mcUsername, mcUuid }) },
+    token
+  )
 }

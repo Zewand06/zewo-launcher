@@ -4,34 +4,37 @@ import { promises as fsp } from 'fs'
 import { Readable } from 'stream'
 import { join } from 'path'
 import extract from 'extract-zip'
-import { getBundledJavaPath } from './paths'
+import { getBundledJavaPath, getJdkRoot } from './paths'
 import type { LaunchProgress } from '../shared/types'
 
-// Modern Minecraft (1.20.5+) Java 21 gerektiriyor ama kullanıcıların
-// bilgisayarında genelde eski bir Java (ör. 1.8) kurulu oluyor — Poyraz'ın
-// arkadaşında tam bu yüzden "compatibility level JAVA_21" hatası çıktı.
-// Bunu her kullanıcı için elle çözmek yerine, launcher kendi taşınabilir
-// Java 21'ini otomatik indirip kuruyor; sistemin Java'sına hiç dokunmuyoruz.
-const ADOPTIUM_URL =
-  'https://api.adoptium.net/v3/binary/latest/21/ga/windows/x64/jdk/hotspot/normal/eclipse'
+// Modern Minecraft her sürümde farklı bir Java isteyebiliyor (ör. 26.2
+// çıkışıyla Java 21'den Java 25'e geçti) — bunu elle takip etmek yerine
+// launchGame, sürümün kendi manifest dosyasından okuduğu gerçek
+// majorVersion'ı buraya geçiyor. Kullanıcıların bilgisayarında genelde eski
+// bir Java kurulu oluyor; sistemin Java'sına hiç dokunmadan, launcher
+// gereken sürümü kendi taşınabilir kopyasını otomatik indirip kuruyor.
+function adoptiumUrl(majorVersion: number): string {
+  return `https://api.adoptium.net/v3/binary/latest/${majorVersion}/ga/windows/x64/jdk/hotspot/normal/eclipse`
+}
 
 export async function ensureJavaPath(
-  onProgress: (progress: LaunchProgress) => void
+  onProgress: (progress: LaunchProgress) => void,
+  majorVersion: number
 ): Promise<string> {
-  const existing = getBundledJavaPath()
+  const existing = getBundledJavaPath(majorVersion)
   if (existing) return existing
 
-  const jdkRoot = join(app.getPath('userData'), 'jdk21')
-  const zipPath = join(app.getPath('temp'), 'zewo-jdk21.zip')
+  const jdkRoot = getJdkRoot(majorVersion)
+  const zipPath = join(app.getPath('temp'), `zewo-jdk${majorVersion}.zip`)
 
   onProgress({
     stage: 'java-download',
-    message: 'Java 21 indiriliyor (ilk seferde gerekli, ~200 MB, biraz sürebilir)…'
+    message: `Java ${majorVersion} indiriliyor (ilk seferde gerekli, ~200 MB, biraz sürebilir)…`
   })
 
-  const res = await fetch(ADOPTIUM_URL, { redirect: 'follow' })
+  const res = await fetch(adoptiumUrl(majorVersion), { redirect: 'follow' })
   if (!res.ok || !res.body) {
-    throw new Error('Java 21 indirilemedi.')
+    throw new Error(`Java ${majorVersion} indirilemedi.`)
   }
 
   await fsp.mkdir(app.getPath('temp'), { recursive: true })
@@ -47,9 +50,9 @@ export async function ensureJavaPath(
   await extract(zipPath, { dir: jdkRoot })
   await fsp.rm(zipPath, { force: true })
 
-  const installed = getBundledJavaPath()
+  const installed = getBundledJavaPath(majorVersion)
   if (!installed || !existsSync(installed)) {
-    throw new Error('Java kurulumu tamamlanamadı.')
+    throw new Error(`Java ${majorVersion} kurulumu tamamlanamadı.`)
   }
   return installed
 }

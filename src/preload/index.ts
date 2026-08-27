@@ -6,7 +6,10 @@ import type {
   LaunchProgress,
   LauncherSettings,
   ModEntry,
+  Permission,
+  PermissionMatrix,
   UpdateStatus,
+  UserRole,
   ZewoSession
 } from '../shared/types'
 
@@ -68,7 +71,20 @@ const api = {
       ipcRenderer.invoke('admin:revokeCosmetic', userId, cosmeticId),
     resetPassword: (userId: number, newPassword: string): Promise<AccountProfile> =>
       ipcRenderer.invoke('admin:resetPassword', userId, newPassword),
-    deleteUser: (userId: number): Promise<{ ok: true }> => ipcRenderer.invoke('admin:deleteUser', userId)
+    deleteUser: (userId: number): Promise<{ ok: true }> => ipcRenderer.invoke('admin:deleteUser', userId),
+    getUser: (userId: number): Promise<AccountProfile> => ipcRenderer.invoke('admin:getUser', userId),
+    setRole: (userId: number, role: UserRole): Promise<AccountProfile> =>
+      ipcRenderer.invoke('admin:setRole', userId, role),
+    getPermissions: (): Promise<{
+      roles: UserRole[]
+      permissions: Permission[]
+      matrix: PermissionMatrix
+    }> => ipcRenderer.invoke('admin:getPermissions'),
+    togglePermission: (
+      role: UserRole,
+      permission: Permission,
+      enabled: boolean
+    ): Promise<{ ok: true }> => ipcRenderer.invoke('admin:togglePermission', role, permission, enabled)
   },
   skin: {
     fetch: (uuid: string): Promise<string | null> => ipcRenderer.invoke('skin:fetch', uuid),

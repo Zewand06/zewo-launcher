@@ -21,7 +21,12 @@ export async function fetchMinecraftSkinUrl(uuid: string): Promise<string | null
     if (!texturesProp) return null
 
     const decoded = JSON.parse(Buffer.from(texturesProp.value, 'base64').toString('utf-8'))
-    return decoded?.textures?.SKIN?.url ?? null
+    const url: string | undefined = decoded?.textures?.SKIN?.url
+    if (!url) return null
+    // Mojang bazı eski hesaplar için texture URL'ini http:// olarak döndürüyor
+    // — Electron bunu sessizce engelliyor (skin hiç yüklenmiyor). https zaten
+    // aynı sunucuda çalışıyor, sadece şemayı düzeltiyoruz.
+    return url.replace(/^http:\/\//, 'https://')
   } catch {
     return null
   }

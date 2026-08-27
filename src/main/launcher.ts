@@ -11,6 +11,7 @@ import { getInstanceRoot } from './paths'
 import { installPerformanceMods } from './performanceMods'
 import { ensureJavaPath } from './javaSetup'
 import { getSettings } from './settings'
+import { startPlaySession, endPlaySession, reportMcSession } from './backendClient'
 import type { LaunchProgress, ZewoSession } from '../shared/types'
 
 const FABRIC_META_URL = 'https://meta.fabricmc.net/v2/versions/game'
@@ -99,7 +100,8 @@ function stripDashes(uuid: string): string {
 export async function launchGame(
   mcVersion: string,
   session: ZewoSession,
-  onProgress: (progress: LaunchProgress) => void
+  onProgress: (progress: LaunchProgress) => void,
+  accountToken: string | null
 ): Promise<void> {
   const root = getInstanceRoot()
   const settings = getSettings()
@@ -153,9 +155,14 @@ export async function launchGame(
 
     // Kullanıcı Ayarlar'dan özel bir Java yolu seçmediyse (hâlâ varsayılan
     // "java" ise), sistemin Java'sına (genelde eski/uyumsuz) güvenmek yerine
-    // launcher'ın kendi Java 21'ini kullan — yoksa şimdi indirip kur.
+    // launcher'ın kendi Java'sını kullan — bu sürümün gerçekte istediği
+    // major sürümü Mojang'ın kendi manifest verisinden okuyoruz (ör. 26.2
+    // Java 25 ister, eski sürümler genelde Java 21) — sabit kodlamıyoruz.
+    const requiredJavaMajor = resolvedVanilla.javaVersion.majorVersion
     const effectiveJavaPath =
-      settings.javaPath === 'java' ? await ensureJavaPath(onProgress) : settings.javaPath
+      settings.javaPath === 'java'
+        ? await ensureJavaPath(onProgress, requiredJavaMajor)
+        : settings.javaPath
 
     onProgress({ stage: 'launching', message: 'Oyun başlatılıyor…' })
 
@@ -173,7 +180,30 @@ export async function launchGame(
 
     onProgress({ stage: 'running', message: 'Oyun açık.', done: true })
 
+    // Profil ekranındaki "toplam oynama süresi" / "en çok oynanan sürüm"
+    // buradan besleniyor — kurulum/indirme süresi değil, sadece Minecraft
+    // süreci gerçekten açıkken geçen süre sayılıyor. Backend'e ulaşılamazsa
+    // (internet yok, sunucu çöktü vb.) oyunun açılmasını hiç etkilemesin
+    // diye sessizce yutulur.
+    let playSessionId: number | null = null
+    if (accountToken) {
+      reportMcSession(accountToken, session.username, session.uuid).catch(() => {})
+      try {
+        const started = await startPlaySession(accountToken, mcVersion)
+        playSessionId = started.sessionId
+      } catch {
+        playSessionId = null
+      }
+    }
+
+    function endTrackedSession(): void {
+      if (accountToken && playSessionId !== null) {
+        endPlaySession(accountToken, playSessionId).catch(() => {})
+      }
+    }
+
     child.once('exit', (code) => {
+      endTrackedSession()
       if (code === 0 || code === null) {
         onProgress({ stage: 'exited', message: 'Oyun kapatıldı.', done: true })
       } else {
@@ -186,6 +216,7 @@ export async function launchGame(
       }
     })
     child.once('error', (err) => {
+      endTrackedSession()
       onProgress({ stage: 'error', message: 'Oyun başlatılamadı.', error: err.message, done: true })
     })
   } catch (err) {
